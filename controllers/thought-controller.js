@@ -34,8 +34,8 @@ const thoughtController = {
               return res.status(404).json({ message: 'No thought with this id!' });
             }
             return User.findOneAndUpdate(
-              { _id: params.thoughtsId },
-              { $pull: { comments: params.thoughtsId } },
+              { _id: params.userId },
+              { $pull: { thoughts: params.thoughtsId } },
               { new: true }
             );
           })
@@ -47,6 +47,38 @@ const thoughtController = {
             res.json(dbUserData);
           })
           .catch(err => res.json(err));
+      },
+
+      addReaction({ params, body }, res) {
+
+        Thoughts.findOneAndUpdate(
+
+          {_id: params.thoughtsId },
+          { $push: {reactions: body}},
+          { new: true }
+        )
+        .then(dbthoughtsData => {
+          if (!dbthoughtsData) {
+            res.status(404).json({ message: 'No pizza found with this id!' });
+            return;
+          }
+
+          res.json(dbthoughtsData)
+
+        })
+
+        .catch(err => res.json(err));
+      },
+
+      removeReaction({ params }, res) {
+
+        Thoughts.findOneAndUpdate(
+          {id: params.thoughtsId },
+          { $pull: {reactions: { reactionId: params.reactionId }}},
+          {new: true}
+        )
+          .then(dbthoughtsData => res.json(dbthoughtsData))
+          .catch(err => res.json(err))
       }
 }
 
