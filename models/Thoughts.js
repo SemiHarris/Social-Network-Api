@@ -3,16 +3,18 @@ const { Schema, model, Types } = require('mongoose');
 
 const ReactionSchema = new Schema(
     {
-      // set custom id to avoid confusion with parent comment's _id field
       reactionId: {
         type: Schema.Types.ObjectId,
         default: () => new Types.ObjectId()
       },
       reactionBody: {
-        type: String
+        type: String,
+        required: true,
+        maxLength: 280
       },
       username: {
-        type: String
+        type: String,
+        required: true
       },
       createdAt: {
         type: Date,
@@ -23,23 +25,29 @@ const ReactionSchema = new Schema(
     {
         toJSON: {
           getters: true
-        }
+        },
+        id: false
       }
   );
 
 const ThoughtsSchema = new Schema({
 
     thoughtText: {
-        type: String
+        type: String,
+        required: true,
+        minlength: 1,
+        maxLength: 280
     },
 
     createAt: {
-        type: Date,
-        default: Date.now
+      type: Date,
+      default: Date.now,
+      get: createdAtVal => dateFormat(createdAtVal)
     },
 
     username: {
-        type: String
+        type: String,
+        required: true,
     },
 
     reactions: [ReactionSchema]
